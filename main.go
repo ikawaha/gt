@@ -473,31 +473,29 @@ func parseFlags() (opts, pkgs []string) {
 		if strings.HasPrefix(arg, "--") && arg != "--" && !strings.HasPrefix(arg, "---") {
 			arg = arg[1:]
 		}
-		if arg == "-gt.timing" {
+		switch {
+		case arg == "-gt.timing":
 			flagTiming = true
-			continue
-		}
-		if arg == "-v" {
+		case arg == "-v":
 			flagV = true
 			opts = append(opts, arg)
 			donePkgs = len(pkgs) > 0
-			continue
-		}
-		if arg == "-short" {
+		case arg == "-short":
 			flagShort = true
 			opts = append(opts, arg)
-			continue
-		}
-		if arg == "-f" {
+		case arg == "-f":
 			flagForce = true
-			continue
-		}
-		if arg == "-l" {
+		case arg == "-l":
 			flagList = true
-			continue
+		case arg == "-p", arg == "-parallel":
+			i++
+			opts = append(opts, arg+"="+os.Args[i])
+		case strings.HasPrefix(arg, "-p="), strings.HasPrefix(arg, "-parallel="):
+			opts = append(opts, arg)
+		default:
+			// unrecognized flag
+			return nil, nil
 		}
-		// unrecognized flag
-		return nil, nil
 	}
 	return opts, pkgs
 }
